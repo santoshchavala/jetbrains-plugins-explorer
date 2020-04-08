@@ -1,6 +1,6 @@
 name: GitHub Pages
 
-on: [push]
+#on: [push]
 
 jobs:
   build-and-deploy:
