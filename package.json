@@ -17,6 +17,7 @@
     "@emotion/styled": "^10.0.27",
     "@webteam/accordion": "^0.3.1",
     "@webteam/button": "^4.4.21",
+    "@webteam/input": "^3.3.5",
     "@webteam/layout": "^0.10.11",
     "@webteam/popup": "^2.1.22",
     "@webteam/social-share": "0.0.19",

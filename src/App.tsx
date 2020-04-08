@@ -26,7 +26,7 @@ const StyledStickyContainer = styled(StickyContainer)`
 `;
 
 const App = () => {
-  const { sort, sortDirection } = usePluginContext();
+  const { query, sort, sortDirection } = usePluginContext();
   const [data, setData] = useState<Plugin[]>([]);
   const [processedData, setProcessedData] = useState<Plugin[]>(data);
 
@@ -37,8 +37,11 @@ const App = () => {
   }, []);
 
   useEffect(() => {
-    setProcessedData(orderBy(data, sort, sortDirection?.toLowerCase() as any));
-  }, [data, sort, sortDirection]);
+    const q = query?.toLowerCase() || '';
+    const queriedData = data.filter((item) => !q || item.name.toLowerCase().includes(q));
+
+    setProcessedData(orderBy(queriedData, sort, sortDirection?.toLowerCase() as any));
+  }, [data, query, sort, sortDirection]);
 
   // const handleExtensionsChange = useCallback(v => {
   //   setSelectedExtensions(v);
@@ -52,7 +55,7 @@ const App = () => {
   // );
 
   return (
-    <ThemeProvider>
+    <ThemeProvider theme={'light'}>
       <StyledStickyContainer>
         <Sticky>
           {({ style }) => (

@@ -4,7 +4,7 @@ import { FilterIcon } from '@webteam/icons';
 import { Col, Container, Row } from '@webteam/layout';
 import { Popup, PopupContent, PopupFooter, PopupHeader } from '@webteam/popup';
 import { useTextStyles } from '@webteam/typography';
-import { Logo } from 'components';
+import { Logo, Search } from 'components';
 import React, { CSSProperties, FunctionComponent, useState } from 'react';
 
 interface Props {
@@ -60,6 +60,7 @@ const Header: FunctionComponent<Props> = ({ style }) => {
             </Content>
           </StyledCol>
           <FilterCol span={3}>
+            <Search />
             <Button
               icon={<FilterIcon />}
               iconPosition="right"

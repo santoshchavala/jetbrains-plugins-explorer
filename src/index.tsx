@@ -1,5 +1,4 @@
 import { css, Global } from '@emotion/core';
-import { ThemeProvider } from '@webteam/ui-contexts';
 import { PluginProvider } from 'plugin-context';
 import React from 'react';
 import ReactDOM from 'react-dom';
@@ -15,12 +14,11 @@ const globalStyles = css`
   }
 
   .ReactVirtualized {
-    &__Grid {
-      outline: none;
-    }
+    &__Grid,
     &__Table__headerColumn,
     &__Table__rowColumn {
       margin-right: 0;
+      outline: none;
     }
   }
 `;
