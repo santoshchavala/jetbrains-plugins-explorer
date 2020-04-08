@@ -14,7 +14,7 @@ const Extensions: FunctionComponent<Props> = ({ plugin: { branch, extensions, re
         <li key={key}>
           {key}:
           <ul>
-            {entries.map(entry => (
+            {entries.map((entry) => (
               <li key={entry}>
                 <a href={`https://github.com/${repository}/blob/${branch}/${entry}`}>{entry}</a>
               </li>

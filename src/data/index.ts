@@ -78,7 +78,7 @@ const api = {
 
 api
   .fetchPlugins()
-  .then(async plugins => {
+  .then(async (plugins) => {
     const result: Plugin[] = [];
     let n = 0;
 
@@ -95,7 +95,7 @@ api
         const details = await api.fetchPluginDetails(plugin.id);
         const { paths, branch } = await api.fetchRepositoryPaths(details.repository);
         const getPath = (filename: string | undefined) =>
-          filename && paths.find(path => path.includes(filename));
+          filename && paths.find((path) => path.includes(filename));
 
         const manifestPath = getPath('plugin.xml');
         if (manifestPath === undefined) {
@@ -105,7 +105,7 @@ api
         const extensions: Plugin['extensions'] = omitBy(
           mapValues(
             omit(get(manifest, ['idea-plugin', 0, 'extensions', 0]), '_attributes'),
-            implementations =>
+            (implementations) =>
               uniq<string>(
                 implementations
                   .map((implementation: any[]) =>
@@ -138,11 +138,11 @@ api
     }
     return result;
   })
-  .then(plugins =>
+  .then((plugins) =>
     fs.writeFileSync(
       path.join(__dirname, 'data.json'),
       JSON.stringify(
-        plugins.map(plugin =>
+        plugins.map((plugin) =>
           omit(
             plugin,
             'icon',

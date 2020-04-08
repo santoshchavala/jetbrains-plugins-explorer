@@ -31,7 +31,7 @@ const App = () => {
   const [processedData, setProcessedData] = useState<Plugin[]>(data);
 
   useEffect(() => {
-    axios.get(DATA_URL).then(response => {
+    axios.get(DATA_URL).then((response) => {
       setData(response.data);
     });
   }, []);

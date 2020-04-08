@@ -65,9 +65,7 @@ const columns: IColumn[] = [
     width: 125,
     render: ({ downloads }) => (
       <div title={downloads.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ')}>
-        {numeral(downloads)
-          .format('0 a')
-          .toUpperCase()}
+        {numeral(downloads).format('0 a').toUpperCase()}
       </div>
     ),
     align: 'right',
@@ -111,7 +109,7 @@ const columns: IColumn[] = [
     width: 100,
     render: ({ tags = [] }) => (
       <>
-        {tags.map(tag => (
+        {tags.map((tag) => (
           <Tag key={tag.id} size="xs">
             {tag.name}
           </Tag>
