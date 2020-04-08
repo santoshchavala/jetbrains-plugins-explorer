@@ -1,4 +1,6 @@
 import { css, Global } from '@emotion/core';
+import { ThemeProvider } from '@webteam/ui-contexts';
+import { PluginProvider } from 'plugin-context';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import App from './App';
@@ -6,15 +8,29 @@ import * as serviceWorker from './serviceWorker';
 
 const globalStyles = css`
   body,
-  html {
+  html,
+  #root {
     height: 100%;
+    margin: 0;
+  }
+
+  .ReactVirtualized {
+    &__Grid {
+      outline: none;
+    }
+    &__Table__headerColumn,
+    &__Table__rowColumn {
+      margin-right: 0;
+    }
   }
 `;
 
 ReactDOM.render(
   <>
     <Global styles={globalStyles} />
-    <App />
+    <PluginProvider>
+      <App />
+    </PluginProvider>
   </>,
   document.getElementById('root'),
 );
