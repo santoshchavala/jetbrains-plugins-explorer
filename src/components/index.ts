@@ -1,5 +1,7 @@
 export { default as BooleanIcon } from './BooleanIcon';
 export { default as Details } from './Details';
+export { default as ExtensionPointsFilter } from './ExtensionPointsFilter';
+export { default as FiltersPopup } from './FiltersPopup';
 export { default as Footer } from './Footer';
 export { default as GradleIcon } from './GradleIcon';
 export { default as GoToTop } from './GoToTop';
@@ -7,5 +9,5 @@ export { default as Header } from './Header';
 export { default as KotlinIcon } from './KotlinIcon';
 export { default as Loader } from './Loader';
 export { default as Logo } from './Logo';
-export { default as Search } from './Search';
+export { default as SearchFilter } from './SearchFilter';
 export { default as Table } from './Table';

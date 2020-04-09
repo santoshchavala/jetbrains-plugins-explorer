@@ -1,11 +1,11 @@
 import styled from '@emotion/styled';
 import Button from '@webteam/button';
-import { FilterIcon } from '@webteam/icons';
+import { FilterIcon, UndoIcon } from '@webteam/icons';
 import { Col, Container, Row } from '@webteam/layout';
-import { Popup, PopupContent, PopupFooter, PopupHeader } from '@webteam/popup';
 import { useTextStyles } from '@webteam/typography';
-import { Logo, Search } from 'components';
-import React, { CSSProperties, FunctionComponent, useState } from 'react';
+import { ExtensionPointsFilter, FiltersPopup, Logo, SearchFilter } from 'components';
+import React, { CSSProperties, FunctionComponent, useCallback, useState } from 'react';
+import { useReset } from 'store';
 
 interface Props {
   style?: CSSProperties;
@@ -38,11 +38,18 @@ const FilterCol = styled(Col)`
   align-items: center;
   display: flex;
   justify-content: flex-end;
+
+  & > * {
+    margin-right: 1rem;
+  }
 `;
 
 const Header: FunctionComponent<Props> = ({ style }) => {
   const textCn = useTextStyles();
   const [filtersOpen, setFiltersOpen] = useState(false);
+  const [resetFilters, filtersApplied] = useReset();
+  const handleFiltersShow = useCallback(() => setFiltersOpen(true), [setFiltersOpen]);
+  const handleFiltersHide = useCallback(() => setFiltersOpen(false), [setFiltersOpen]);
 
   return (
     <Wrapper style={style}>
@@ -51,7 +58,7 @@ const Header: FunctionComponent<Props> = ({ style }) => {
           <Col span={1}>
             <Logo noBeams />
           </Col>
-          <StyledCol span={8}>
+          <StyledCol span={5}>
             <Content>
               <h1 className={textCn('wt-h2')}>Plugins Explorer</h1>
               <h2 className={textCn('wt-h5')}>
@@ -59,29 +66,26 @@ const Header: FunctionComponent<Props> = ({ style }) => {
               </h2>
             </Content>
           </StyledCol>
-          <FilterCol span={3}>
-            <Search />
+          <FilterCol span={6}>
+            <ExtensionPointsFilter />
+            <SearchFilter />
+            <Button icon={<FilterIcon />} size="xs" onClick={handleFiltersShow}>
+              Filters {filtersApplied && '*'}
+            </Button>
             <Button
-              icon={<FilterIcon />}
-              iconPosition="right"
-              size={'s'}
-              onClick={() => setFiltersOpen(true)}
+              mode="outline"
+              disabled={!filtersApplied}
+              icon={<UndoIcon />}
+              size="xs"
+              onClick={resetFilters}
             >
-              Filters
+              Reset
             </Button>
           </FilterCol>
         </Row>
       </Container>
 
-      {filtersOpen && (
-        <Popup onRequestClose={() => setFiltersOpen(false)}>
-          <PopupHeader>Filters</PopupHeader>
-          <PopupContent>xxx</PopupContent>
-          <PopupFooter>
-            <Button>Apply</Button>
-          </PopupFooter>
-        </Popup>
-      )}
+      {filtersOpen && <FiltersPopup onClose={handleFiltersHide} />}
     </Wrapper>
   );
 };

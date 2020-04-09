@@ -2,8 +2,8 @@ import axios from 'axios';
 import fs from 'fs';
 import { get, identity, isEmpty, last, mapValues, omit, omitBy, padStart, uniq } from 'lodash';
 import path from 'path';
-import { xml2js } from 'xml-js';
 import { GHReposResult, GHTreesResult, JBPluginsResponse, JBSearchResult, Plugin } from 'types';
+import { xml2js } from 'xml-js';
 
 const { ACCESS_TOKEN } = process.env;
 

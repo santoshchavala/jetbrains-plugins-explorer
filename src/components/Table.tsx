@@ -7,17 +7,13 @@ import { useTextStyles } from '@webteam/typography';
 import { BooleanIcon, GoToTop, GradleIcon, KotlinIcon, Loader } from 'components';
 import { keys } from 'lodash';
 import numeral from 'numeral';
-import { PluginConsumer } from 'plugin-context';
-import React, { Component, FunctionComponent, useCallback, useRef } from 'react';
+import React, { Component, FunctionComponent, useCallback, useRef, useState } from 'react';
 import TimeAgo from 'react-timeago';
-import { AutoSizer, Column, SortIndicator, Table } from 'react-virtualized';
+import { AutoSizer, Column, SortIndicator, Table, TableHeaderRenderer } from 'react-virtualized';
 import { ColumnProps } from 'react-virtualized/dist/es/Table';
 import 'react-virtualized/styles.css';
+import { useData, useFilteredData, useSort } from 'store';
 import { Plugin } from 'types';
-
-interface Props {
-  data: Plugin[];
-}
 
 interface IColumn {
   title: string;
@@ -173,75 +169,113 @@ const StyledTag = styled(Tag)`
   margin-right: 0.5rem;
 `;
 
-const XTable: FunctionComponent<Props> = ({ data }) => {
+const NoRowsRendererWrapper = styled.div`
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
+
+const XTable = () => {
+  const [filteredData] = useFilteredData();
+  const [data] = useData();
+  const [sort, setSort] = useSort();
+  const [scrollPosition, setScrollPosition] = useState(0);
   const textCn = useTextStyles();
   const tableRef = useRef<Table>(null);
   const goToTop = useCallback(() => {
     tableRef.current?.scrollToPosition(0);
   }, [tableRef]);
 
+  const handleRowGetter = useCallback(({ index }) => filteredData[index], [filteredData]);
+  const handleScroll = useCallback(
+    ({ scrollTop }) => {
+      setScrollPosition(scrollTop);
+    },
+    [setScrollPosition],
+  );
+  const handleSort = useCallback(
+    ({ sortBy, sortDirection }) => {
+      setSort({ sort: sortBy, order: sortDirection });
+      goToTop();
+    },
+    [goToTop, setSort],
+  );
+  const handleHeaderRenderer = useCallback(
+    (column): TableHeaderRenderer => ({ sortBy, dataKey }) => {
+      const Icon = column.icon;
+      return Icon ? (
+        <Tooltip size="s" placement="bottom" content={column.title}>
+          <HeaderContainer>
+            <Icon />
+            {sortBy === dataKey && <SortIndicator key="SortIndicator" sortDirection={sort.order} />}
+          </HeaderContainer>
+        </Tooltip>
+      ) : (
+        column.title
+      );
+    },
+    [sort],
+  );
+  const handleCellRenderer = useCallback(
+    ({ columnIndex, rowData }) => (
+      <div style={{ textAlign: columns[columnIndex].align }}>
+        {columns[columnIndex].render(rowData, textCn)}
+      </div>
+    ),
+    [textCn],
+  );
+  const handleNoRowsRenderer = useCallback(
+    () => (
+      <NoRowsRendererWrapper>
+        {!data.length ? (
+          <Loader />
+        ) : (
+          <h3 className={textCn('wt-h3')}>No plugins are matching the given criteria.</h3>
+        )}
+      </NoRowsRendererWrapper>
+    ),
+    [data, textCn],
+  );
+
   return (
     <Wrapper>
-      <PluginConsumer>
-        {({ setPlugin, sort, setSort, sortDirection, setSortDirection }) => (
-          <AutoSizer>
-            {({ height, width }) => (
-              <>
-                <GoToTop onClick={goToTop} />
-                <Table
-                  ref={tableRef}
-                  width={width}
-                  height={height}
-                  headerHeight={64}
-                  rowHeight={30}
-                  rowCount={data.length}
-                  rowGetter={({ index }) => data[index]}
-                  noRowsRenderer={() => <Loader />}
-                  sort={({ sortBy, sortDirection }) => {
-                    setSort(sortBy);
-                    setSortDirection(sortDirection);
-                    goToTop();
-                  }}
-                  sortBy={sort}
-                  sortDirection={sortDirection}
-                  className="wt-data-grid wt-data-grid_size_m wt-data-grid_theme_light wt-text-2"
-                  headerClassName="wt-data-grid__row_header"
-                  rowClassName="wt-data-grid__row"
-                >
-                  {columns.map(({ key, title, icon: Icon, props }) => (
-                    <Column
-                      key={key}
-                      className="wt-data-grid__cell"
-                      label={title}
-                      dataKey={key}
-                      headerRenderer={({ sortBy, dataKey }) =>
-                        Icon ? (
-                          <Tooltip size="s" placement="bottom" content={title}>
-                            <HeaderContainer>
-                              <Icon />
-                              {sortBy === dataKey && (
-                                <SortIndicator key="SortIndicator" sortDirection={sortDirection} />
-                              )}
-                            </HeaderContainer>
-                          </Tooltip>
-                        ) : (
-                          title
-                        )
-                      }
-                      cellRenderer={({ columnIndex, rowData }) => (
-                        <div style={{ textAlign: columns[columnIndex].align }}>
-                          {columns[columnIndex].render(rowData, textCn)}
-                        </div>
-                      )}
-                      {...props}
-                    />
-                  ))}
-                </Table>
-              </>
-            )}
-          </AutoSizer>
+      <AutoSizer>
+        {({ height, width }) => (
+          <>
+            {scrollPosition > 500 && <GoToTop onClick={goToTop} />}
+            <Table
+              ref={tableRef}
+              width={width}
+              height={height}
+              headerHeight={64}
+              rowHeight={30}
+              rowCount={filteredData.length}
+              rowGetter={handleRowGetter}
+              noRowsRenderer={handleNoRowsRenderer}
+              sort={handleSort}
+              sortBy={sort.sort}
+              sortDirection={sort.order}
+              className="wt-data-grid wt-data-grid_size_m wt-data-grid_theme_light wt-text-2"
+              headerClassName="wt-data-grid__row_header"
+              rowClassName="wt-data-grid__row"
+              onScroll={handleScroll}
+            >
+              {columns.map((column) => (
+                <Column
+                  key={column.key}
+                  className="wt-data-grid__cell"
+                  label={column.title}
+                  dataKey={column.key}
+                  headerRenderer={handleHeaderRenderer(column)}
+                  cellRenderer={handleCellRenderer}
+                  {...column.props}
+                />
+              ))}
+            </Table>
+          </>
         )}
-      </PluginConsumer>
+      </AutoSizer>
     </Wrapper>
   );
 };

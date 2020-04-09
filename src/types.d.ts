@@ -1,7 +1,40 @@
 import { ISocialShareProps } from '@webteam/social-share';
+import { ISwitcherOptions } from '@webteam/switcher/typings/switcher';
+import { SortDirectionType } from 'react-virtualized';
 
-interface Config {
+export type YesNoAny = 'yes' | 'no' | 'any';
+
+export interface Config {
   socialShare: Partial<ISocialShareProps>;
+  options: {
+    downloadsFilter: ISwitcherOptions<number>[];
+    yesNoAny: ISwitcherOptions<YesNoAny>[];
+  };
+}
+
+export interface Filters {
+  downloads: number;
+  gradle: YesNoAny;
+  kotlin: YesNoAny;
+  query: string;
+}
+
+export interface Sort {
+  sort?: string;
+  order: SortDirectionType;
+}
+
+export interface GlobalStore {
+  data: Plugin[];
+  filteredData: Plugin[];
+  filters: Filters;
+  sort: Sort;
+
+  setData: (data: Pluginp[]) => void;
+  setFilteredData: (data: Plugin[]) => void;
+  setFilters: (filters: Filters) => void;
+  setSort: (sort: Sort) => void;
+  reset: () => void;
 }
 
 interface Vendor {

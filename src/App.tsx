@@ -4,11 +4,10 @@ import '@webteam/table';
 import '@webteam/typography';
 import { ThemeProvider } from '@webteam/ui-contexts';
 import axios from 'axios';
-import { Details, Footer, Header, Table } from 'components';
-import { orderBy } from 'lodash';
-import { usePluginContext } from 'plugin-context';
-import React, { useEffect, useState } from 'react';
+import { Footer, Header, Table } from 'components';
+import React, { useEffect } from 'react';
 import { Sticky, StickyContainer } from 'react-sticky';
+import { useData } from 'store';
 import { Plugin } from 'types';
 
 const DATA_URL =
@@ -26,22 +25,11 @@ const StyledStickyContainer = styled(StickyContainer)`
 `;
 
 const App = () => {
-  const { query, sort, sortDirection } = usePluginContext();
-  const [data, setData] = useState<Plugin[]>([]);
-  const [processedData, setProcessedData] = useState<Plugin[]>(data);
+  const [, setData] = useData();
 
   useEffect(() => {
-    axios.get(DATA_URL).then((response) => {
-      setData(response.data);
-    });
-  }, []);
-
-  useEffect(() => {
-    const q = query?.toLowerCase() || '';
-    const queriedData = data.filter((item) => !q || item.name.toLowerCase().includes(q));
-
-    setProcessedData(orderBy(queriedData, sort, sortDirection?.toLowerCase() as any));
-  }, [data, query, sort, sortDirection]);
+    axios.get<Plugin[]>(DATA_URL).then((response) => setData(response.data));
+  }, [setData]);
 
   // const handleExtensionsChange = useCallback(v => {
   //   setSelectedExtensions(v);
@@ -67,8 +55,8 @@ const App = () => {
           )}
         </Sticky>
         <LayoutContent>
-          <Table data={processedData} />
-          <Details />
+          <Table />
+          {/*<Details />*/}
         </LayoutContent>
       </StyledStickyContainer>
       <Footer />

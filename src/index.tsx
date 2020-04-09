@@ -1,7 +1,7 @@
 import { css, Global } from '@emotion/core';
-import { PluginProvider } from 'plugin-context';
 import React from 'react';
 import ReactDOM from 'react-dom';
+import { PluginProvider } from 'store';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
 
