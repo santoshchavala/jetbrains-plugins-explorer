@@ -1,4 +1,4 @@
-import { noop } from 'lodash';
+import { noop, orderBy } from 'lodash';
 import React, {
   createContext,
   FunctionComponent,
@@ -46,12 +46,17 @@ export const PluginProvider: FunctionComponent = ({ children }) => {
 
   useEffect(() => {
     const q = filters.query?.toLowerCase() || '';
-    const queriedData = data.filter(
-      (item) =>
-        (!q || item.name.toLowerCase().includes(q)) &&
-        item.downloads >= filters.downloads &&
-        testYesNoAny(filters.gradle, item.gradle) &&
-        testYesNoAny(filters.kotlin, item.kotlin),
+
+    const queriedData = orderBy(
+      data.filter(
+        (item) =>
+          (!q || item.name.toLowerCase().includes(q)) &&
+          item.downloads >= filters.downloads &&
+          testYesNoAny(filters.gradle, item.gradle) &&
+          testYesNoAny(filters.kotlin, item.kotlin),
+      ),
+      sort.sort,
+      sort.order.toLowerCase() as 'asc' | 'desc',
     );
 
     setFilteredData(queriedData);
